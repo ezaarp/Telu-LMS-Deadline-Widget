@@ -2,6 +2,21 @@
 
 Desktop app Windows untuk menampilkan deadline tugas dari LMS Telkom University dalam tampilan board yang rapi dan mudah dipantau. Aplikasi ini mengambil data langsung dari calendar export `ICS`, lalu menyusunnya ke kolom `Due Today`, `To Do`, dan `Done` agar tugas lebih mudah dilihat, dikelola, dan dibuka kembali ke halaman assignment di LMS.
 
+## Flow
+
+```mermaid
+flowchart TD
+    A["Download app from GitHub Releases"] --> B["Open installer or portable app"]
+    B --> C["Paste LMS calendar export URL (ICS)"]
+    C --> D["Click Save & Authenticate"]
+    D --> E["Login to TelU LMS / complete Cloudflare"]
+    E --> F["App fetches calendar data"]
+    F --> G["Tasks are grouped into Due Today, To Do, and Done"]
+    G --> H["Open task details or go to assignment link"]
+    G --> I["Drag finished tasks into Done"]
+    G --> J["Refresh and keep tasks updated"]
+```
+
 ## Cara Menggunakan
 
 Unduh aplikasi dari halaman Releases GitHub:
