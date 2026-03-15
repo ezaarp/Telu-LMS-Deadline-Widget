@@ -1,8 +1,21 @@
 # TelU LMS Tasks Checker
 
-Desktop app Windows untuk melihat task LMS Telkom University dari calendar export `ICS`, menata task ke board `Due Today / To Do / Done`, dan membagikan aplikasi ke user awam tanpa terminal.
+Desktop app Windows untuk menampilkan deadline tugas dari LMS Telkom University dalam tampilan board yang rapi dan mudah dipantau. Aplikasi ini mengambil data langsung dari calendar export `ICS`, lalu menyusunnya ke kolom `Due Today`, `To Do`, dan `Done` agar tugas lebih mudah dilihat, dikelola, dan dibuka kembali ke halaman assignment di LMS.
 
 ## Cara Menggunakan
+
+Unduh aplikasi dari halaman Releases GitHub:
+
+- Release `v1.0.1`: [https://github.com/ezaarp/Telu-LMS-Deadline-Widget/releases/tag/v1.0.1](https://github.com/ezaarp/Telu-LMS-Deadline-Widget/releases/tag/v1.0.1)
+- Installer Windows: [TelU-LMS-Tasks-Checker-0.1.1-x64.exe](https://github.com/ezaarp/Telu-LMS-Deadline-Widget/releases/download/v1.0.1/TelU-LMS-Tasks-Checker-0.1.1-x64.exe)
+- Portable build: [TelU-LMS-Tasks-Checker-0.1.1-x64-portable.exe](https://github.com/ezaarp/Telu-LMS-Deadline-Widget/releases/download/v1.0.1/TelU-LMS-Tasks-Checker-0.1.1-x64-portable.exe)
+
+Cara instal dan buka aplikasi:
+
+1. Jika memilih installer, unduh file installer lalu jalankan `.exe`.
+2. Ikuti langkah instalasi sampai selesai.
+3. Buka aplikasi `TelU LMS Tasks Checker` dari desktop atau Start Menu.
+4. Jika memilih portable build, cukup unduh lalu double-click file `.exe` tanpa instalasi.
 
 Setelah aplikasi terbuka:
 
@@ -53,7 +66,6 @@ Build folder output akan dibuat di [dist](C:/Users/andra/Downloads/codex_project
 
 ## Catatan
 
+- URL kalender, pengaturan aplikasi, dan status task `Done` disimpan lokal di perangkat Anda.
 - URL export `ICS` berisi `authtoken`, jadi perlakukan sebagai data sensitif.
 - Auto update hanya aktif pada build terpaket, bukan saat development lewat terminal.
-- Installer GitHub Release belum di-upload pada repo ini.
-- Icon installer/app menggunakan resource di folder [build](C:/Users/andra/Downloads/codex_project/build).
