@@ -19,6 +19,25 @@ let authCheckTimer;
 let currentConfig = { ...DEFAULT_CONFIG };
 let currentUpdateState = null;
 
+function formatUpdateError(error) {
+  const rawMessage = error == null ? "" : String(error.message || error);
+  const normalized = rawMessage.toLowerCase();
+
+  if (
+    normalized.includes("unable to find latest version on github")
+    || normalized.includes("cannot parse releases feed")
+    || normalized.includes("api.github.com/repos")
+  ) {
+    return "No published GitHub Release is available yet. Publish the first packaged release to enable in-app updates.";
+  }
+
+  if (normalized.includes("enetunreach") || normalized.includes("timed out")) {
+    return "Unable to reach the update server right now. Please try again later.";
+  }
+
+  return `Update error: ${rawMessage || "unknown error"}`;
+}
+
 function createUpdateState(overrides = {}) {
   return {
     version: app.getVersion(),
@@ -256,7 +275,7 @@ function configureAutoUpdater() {
   autoUpdater.on("error", (error) => {
     setUpdateState({
       status: "error",
-      message: `Update error: ${error == null ? "unknown error" : error.message}`,
+      message: formatUpdateError(error),
       canCheck: true,
       canDownload: false,
       canInstall: false,
@@ -814,7 +833,7 @@ app.whenReady().then(async () => {
       autoUpdater.checkForUpdates().catch((error) => {
         setUpdateState({
           status: "error",
-          message: `Update error: ${error.message}`,
+          message: formatUpdateError(error),
           canCheck: true,
           canDownload: false,
           canInstall: false,

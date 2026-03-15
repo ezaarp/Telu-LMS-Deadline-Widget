@@ -343,6 +343,13 @@ textarea {
   border-left: 1px solid var(--line);
 }
 
+.time-date {
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: var(--text);
+}
+
 .time-label {
   font-size: 11px;
   text-transform: uppercase;

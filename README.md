@@ -2,12 +2,7 @@
 
 Desktop app Windows untuk melihat task LMS Telkom University dari calendar export `ICS`, menata task ke board `Due Today / To Do / Done`, dan membagikan aplikasi ke user awam tanpa terminal.
 
-## Untuk User Umum
-
-Unduh aplikasi dari halaman Releases GitHub:
-
-- Installer Windows: jalankan file installer lalu ikuti langkah install
-- Portable build: ekstrak lalu double-click file `.exe`
+## Cara Menggunakan
 
 Setelah aplikasi terbuka:
 
@@ -56,29 +51,9 @@ Build folder output akan dibuat di [dist](C:/Users/andra/Downloads/codex_project
    npm run pack
    ```
 
-## Publish Release ke GitHub
-
-Repo publish target:
-
-- [ezaarp/Telu-LMS-Deadline-Widget](https://github.com/ezaarp/Telu-LMS-Deadline-Widget)
-
-Sebelum publish, set `GH_TOKEN` ke Personal Access Token GitHub yang punya izin membuat release.
-
-Contoh PowerShell:
-
-```powershell
-$env:GH_TOKEN="YOUR_GITHUB_TOKEN"
-npm run release
-```
-
-Perintah itu akan:
-
-- build installer Windows
-- build portable artifact
-- upload artifacts ke GitHub Releases
-
 ## Catatan
 
 - URL export `ICS` berisi `authtoken`, jadi perlakukan sebagai data sensitif.
 - Auto update hanya aktif pada build terpaket, bukan saat development lewat terminal.
+- Installer GitHub Release belum di-upload pada repo ini.
 - Icon installer/app menggunakan resource di folder [build](C:/Users/andra/Downloads/codex_project/build).

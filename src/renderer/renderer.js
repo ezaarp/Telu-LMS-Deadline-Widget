@@ -8,6 +8,7 @@ const setupView = document.getElementById("setupView");
 const taskView = document.getElementById("taskView");
 const settingsPanel = document.getElementById("settingsPanel");
 const statusText = document.getElementById("statusText");
+const currentDateNode = document.getElementById("currentDate");
 const currentTimeNode = document.getElementById("currentTime");
 const assignmentsNode = document.getElementById("assignments");
 const emptyStateNode = document.getElementById("emptyState");
@@ -120,11 +121,20 @@ function startLiveClock() {
   }
 
   const update = () => {
+    const now = new Date();
+
+    currentDateNode.textContent = new Intl.DateTimeFormat("en-GB", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }).format(now);
+
     currentTimeNode.textContent = new Intl.DateTimeFormat("id-ID", {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit"
-    }).format(new Date());
+    }).format(now);
   };
 
   update();
