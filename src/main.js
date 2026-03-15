@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog, shell } = require("electron");
 const fs = require("node:fs/promises");
 const path = require("node:path");
+const { autoUpdater } = require("electron-updater");
 
 const DEFAULT_CONFIG = {
   calendarUrl: "",
@@ -16,6 +17,37 @@ let authWindow;
 let sessionWindow;
 let authCheckTimer;
 let currentConfig = { ...DEFAULT_CONFIG };
+let currentUpdateState = null;
+
+function createUpdateState(overrides = {}) {
+  return {
+    version: app.getVersion(),
+    status: "idle",
+    message: app.isPackaged
+      ? "Ready to check for updates."
+      : "Updates are available in packaged builds only.",
+    canCheck: app.isPackaged,
+    canDownload: false,
+    canInstall: false,
+    progress: null,
+    ...overrides
+  };
+}
+
+function setUpdateState(overrides = {}) {
+  currentUpdateState = createUpdateState({
+    ...(currentUpdateState || {}),
+    ...overrides
+  });
+  broadcastUpdateState();
+  return currentUpdateState;
+}
+
+function broadcastUpdateState() {
+  if (widgetWindow && !widgetWindow.isDestroyed()) {
+    widgetWindow.webContents.send("update:state", currentUpdateState || createUpdateState());
+  }
+}
 
 function getCalendarOrigin(url) {
   try {
@@ -93,6 +125,9 @@ function createWidgetWindow() {
   });
 
   widgetWindow.loadFile(path.join(__dirname, "renderer", "index.html"));
+  widgetWindow.webContents.on("did-finish-load", () => {
+    broadcastUpdateState();
+  });
 }
 
 function createAuthWindow() {
@@ -151,6 +186,83 @@ function createSessionWindow() {
   });
 
   return sessionWindow;
+}
+
+function configureAutoUpdater() {
+  setUpdateState();
+
+  if (!app.isPackaged) {
+    return;
+  }
+
+  autoUpdater.autoDownload = false;
+  autoUpdater.autoInstallOnAppQuit = false;
+
+  autoUpdater.on("checking-for-update", () => {
+    setUpdateState({
+      status: "checking",
+      message: "Checking for updates...",
+      canCheck: false,
+      canDownload: false,
+      canInstall: false,
+      progress: null
+    });
+  });
+
+  autoUpdater.on("update-available", (info) => {
+    setUpdateState({
+      status: "available",
+      message: `Version ${info.version} is available.`,
+      canCheck: true,
+      canDownload: true,
+      canInstall: false,
+      progress: null
+    });
+  });
+
+  autoUpdater.on("update-not-available", () => {
+    setUpdateState({
+      status: "idle",
+      message: "You are on the latest version.",
+      canCheck: true,
+      canDownload: false,
+      canInstall: false,
+      progress: null
+    });
+  });
+
+  autoUpdater.on("download-progress", (progress) => {
+    setUpdateState({
+      status: "downloading",
+      message: `Downloading update... ${Math.round(progress.percent)}%`,
+      canCheck: false,
+      canDownload: false,
+      canInstall: false,
+      progress: progress.percent
+    });
+  });
+
+  autoUpdater.on("update-downloaded", (info) => {
+    setUpdateState({
+      status: "downloaded",
+      message: `Version ${info.version} is ready to install.`,
+      canCheck: true,
+      canDownload: false,
+      canInstall: true,
+      progress: 100
+    });
+  });
+
+  autoUpdater.on("error", (error) => {
+    setUpdateState({
+      status: "error",
+      message: `Update error: ${error == null ? "unknown error" : error.message}`,
+      canCheck: true,
+      canDownload: false,
+      canInstall: false,
+      progress: null
+    });
+  });
 }
 
 async function loadAuthHelperPage(window, calendarUrl) {
@@ -641,6 +753,48 @@ ipcMain.handle("window:close", async () => {
   }
 });
 
+ipcMain.handle("app:getInfo", async () => ({
+  version: app.getVersion(),
+  packaged: app.isPackaged,
+  productName: app.getName()
+}));
+
+ipcMain.handle("update:getState", async () => currentUpdateState || createUpdateState());
+
+ipcMain.handle("update:check", async () => {
+  if (!app.isPackaged) {
+    return setUpdateState({
+      status: "idle",
+      message: "Package the app first to test auto updates.",
+      canCheck: false,
+      canDownload: false,
+      canInstall: false,
+      progress: null
+    });
+  }
+
+  await autoUpdater.checkForUpdates();
+  return currentUpdateState;
+});
+
+ipcMain.handle("update:download", async () => {
+  if (!app.isPackaged) {
+    throw new Error("Update download works only in packaged builds.");
+  }
+
+  await autoUpdater.downloadUpdate();
+  return currentUpdateState;
+});
+
+ipcMain.handle("update:install", async () => {
+  if (!app.isPackaged) {
+    throw new Error("Update install works only in packaged builds.");
+  }
+
+  autoUpdater.quitAndInstall(false, true);
+  return { ok: true };
+});
+
 ipcMain.handle("link:openExternal", async (_event, url) => {
   if (!isHttpUrl(url)) {
     throw new Error("Link tugas tidak valid.");
@@ -652,7 +806,23 @@ ipcMain.handle("link:openExternal", async (_event, url) => {
 
 app.whenReady().then(async () => {
   await ensureConfigLoaded();
+  configureAutoUpdater();
   createWidgetWindow();
+
+  if (app.isPackaged) {
+    setTimeout(() => {
+      autoUpdater.checkForUpdates().catch((error) => {
+        setUpdateState({
+          status: "error",
+          message: `Update error: ${error.message}`,
+          canCheck: true,
+          canDownload: false,
+          canInstall: false,
+          progress: null
+        });
+      });
+    }, 2500);
+  }
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {

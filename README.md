@@ -1,17 +1,32 @@
-# TelU LMS Deadline Widget
+# TelU LMS Tasks Checker
 
-Widget desktop sederhana untuk Windows yang mengambil deadline tugas dari URL export calendar LMS Telkom University dan menampilkannya sebagai daftar tugas.
+Desktop app Windows untuk melihat task LMS Telkom University dari calendar export `ICS`, menata task ke board `Due Today / To Do / Done`, dan membagikan aplikasi ke user awam tanpa terminal.
+
+## Untuk User Umum
+
+Unduh aplikasi dari halaman Releases GitHub:
+
+- Installer Windows: jalankan file installer lalu ikuti langkah install
+- Portable build: ekstrak lalu double-click file `.exe`
+
+Setelah aplikasi terbuka:
+
+1. Paste URL export kalender LMS Anda
+2. Klik `Simpan & autentikasi`
+3. Login / selesaikan Cloudflare
+4. Widget akan sinkron otomatis dan siap dipakai
 
 ## Fitur
 
-- Window kecil yang bisa digeser dan tidak selalu di atas jendela lain.
-- Menyimpan URL kalender secara lokal di folder data aplikasi Electron.
-- Refresh manual dan refresh otomatis berkala.
-- Setup awal satu kali, lalu UI berubah menjadi mode ringkas berisi task dan tombol refresh.
-- Jendela autentikasi akan menutup otomatis setelah sesi LMS valid.
-- Parsing kalender `ICS` untuk menampilkan deadline terdekat.
+- Board task `Due Today`, `To Do`, dan `Done`
+- Drag-and-drop task ke kolom `Done`
+- Countdown deadline dan warna prioritas
+- Deskripsi task yang bisa di-expand
+- Tombol langsung ke assignment LMS jika link tersedia
+- Settings panel untuk update URL `ICS` kapan saja
+- Auto update dari GitHub Releases pada build terpaket
 
-## Menjalankan
+## Menjalankan Untuk Development
 
 1. Install dependency:
 
@@ -19,19 +34,51 @@ Widget desktop sederhana untuk Windows yang mengambil deadline tugas dari URL ex
    .\install-deps.cmd
    ```
 
-2. Jalankan aplikasinya:
+2. Jalankan app:
 
    ```powershell
    .\start-widget.cmd
    ```
 
-3. Paste URL export calendar LMS Anda ke field `Calendar export URL`.
-4. Klik `Simpan & autentikasi`, lalu login atau selesaikan Cloudflare di jendela LMS yang terbuka.
-5. Setelah sesi valid, jendela autentikasi akan tertutup otomatis dan widget langsung menampilkan task Anda.
+## Build Distribusi Windows
+
+Build folder output akan dibuat di [dist](C:/Users/andra/Downloads/codex_project/dist).
+
+1. Build installer + portable:
+
+   ```powershell
+   npm run dist
+   ```
+
+2. Build unpacked folder untuk testing lokal:
+
+   ```powershell
+   npm run pack
+   ```
+
+## Publish Release ke GitHub
+
+Repo publish target:
+
+- [ezaarp/Telu-LMS-Tasks-Checker-](https://github.com/ezaarp/Telu-LMS-Tasks-Checker-)
+
+Sebelum publish, set `GH_TOKEN` ke Personal Access Token GitHub yang punya izin membuat release.
+
+Contoh PowerShell:
+
+```powershell
+$env:GH_TOKEN="YOUR_GITHUB_TOKEN"
+npm run release
+```
+
+Perintah itu akan:
+
+- build installer Windows
+- build portable artifact
+- upload artifacts ke GitHub Releases
 
 ## Catatan
 
-- URL export yang berisi `authtoken` bersifat sensitif. Aplikasi ini menyimpannya di profil lokal Electron, bukan di source code.
-- LMS Moodle umumnya mengekspor kalender dalam format `ICS`, dan widget ini membaca event dari format tersebut.
-- Jika `npm start` biasa bermasalah di Windows karena `PATH`, gunakan launcher `start-widget.cmd` yang sudah disiapkan.
-- Jendela autentikasi tidak membuka URL export kalender secara langsung, karena URL tersebut biasanya memicu prompt download file `icalexport.ics`.
+- URL export `ICS` berisi `authtoken`, jadi perlakukan sebagai data sensitif.
+- Auto update hanya aktif pada build terpaket, bukan saat development lewat terminal.
+- Icon installer/app menggunakan resource di folder [build](C:/Users/andra/Downloads/codex_project/build).

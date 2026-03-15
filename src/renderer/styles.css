@@ -210,7 +210,9 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  flex: 1;
   min-height: 0;
+  overflow: hidden;
 }
 
 .field {
@@ -275,6 +277,58 @@ textarea {
   margin-bottom: 14px;
 }
 
+.update-panel {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.update-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.update-panel h3 {
+  margin: 8px 0 0;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.update-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.update-badge.status-available,
+.update-badge.status-downloading {
+  background: var(--warning-soft);
+  color: var(--warning);
+  border-color: #f0d6bd;
+}
+
+.update-badge.status-downloaded,
+.update-badge.status-idle {
+  background: var(--done-soft);
+  color: var(--done);
+  border-color: #bbf7d0;
+}
+
+.update-badge.status-error {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: #fecaca;
+}
+
 #statusText {
   color: var(--muted);
   font-size: 13px;
@@ -307,18 +361,18 @@ textarea {
   gap: 14px;
   min-height: 0;
   flex: 1;
-  overflow: auto;
+  overflow: hidden;
   padding-right: 2px;
   align-items: start;
 }
 
 .task-section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   min-height: 0;
   height: 100%;
-  padding: 14px;
+  max-height: 100%;
+  overflow: hidden;
   background: rgba(255, 255, 255, 0.68);
   border: 1px solid var(--line);
   border-radius: 22px;
@@ -335,6 +389,9 @@ textarea {
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
+  padding: 14px 14px 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(217, 226, 236, 0.8);
 }
 
 .section-header h2 {
@@ -366,10 +423,9 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  flex: 1;
   overflow-y: auto;
   min-height: 0;
-  padding-right: 4px;
+  padding: 12px 10px 14px 14px;
 }
 
 .section-empty {

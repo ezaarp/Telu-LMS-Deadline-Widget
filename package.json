@@ -1,13 +1,73 @@
 {
   "name": "telu-lms-widget",
-  "version": "0.1.0",
-  "description": "Desktop widget for Telkom University LMS calendar deadlines.",
+  "version": "0.1.1",
+  "description": "Desktop task board for Telkom University LMS calendar deadlines.",
+  "author": "ezaarp",
+  "productName": "TelU LMS Tasks Checker",
   "main": "src/main.js",
   "scripts": {
     "start": "start-widget.cmd",
-    "install:win": "install-deps.cmd"
+    "install:win": "install-deps.cmd",
+    "pack": "cmd /c \"set PATH=%SystemRoot%\\System32;%PATH%&& electron-builder --dir\"",
+    "dist": "cmd /c \"set PATH=%SystemRoot%\\System32;%PATH%&& electron-builder --win nsis portable\"",
+    "release": "cmd /c \"set PATH=%SystemRoot%\\System32;%PATH%&& electron-builder --win nsis portable --publish always\""
+  },
+  "build": {
+    "appId": "com.ezaarp.telulmstaskschecker",
+    "productName": "TelU LMS Tasks Checker",
+    "copyright": "Copyright (c) 2026 ezaarp",
+    "asar": true,
+    "files": [
+      "src/**/*",
+      "package.json",
+      "README.md"
+    ],
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "ezaarp",
+        "repo": "Telu-LMS-Tasks-Checker-"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": false,
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "TelU LMS Tasks Checker"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-${arch}-portable.${ext}"
+    }
   },
   "devDependencies": {
-    "electron": "^37.2.0"
+    "electron": "^37.2.0",
+    "electron-builder": "^26.8.1"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3"
   }
 }

@@ -21,6 +21,12 @@ const reauthButton = document.getElementById("reauthButton");
 const saveSettingsButton = document.getElementById("saveSettingsButton");
 const settingsAuthButton = document.getElementById("settingsAuthButton");
 const closeSettingsButton = document.getElementById("closeSettingsButton");
+const appVersionLabel = document.getElementById("appVersionLabel");
+const updateStatusBadge = document.getElementById("updateStatusBadge");
+const updateStatusText = document.getElementById("updateStatusText");
+const checkUpdatesButton = document.getElementById("checkUpdatesButton");
+const downloadUpdateButton = document.getElementById("downloadUpdateButton");
+const installUpdateButton = document.getElementById("installUpdateButton");
 const minimizeButton = document.getElementById("minimizeButton");
 const closeButton = document.getElementById("closeButton");
 
@@ -36,6 +42,7 @@ let liveRenderTimer = null;
 let latestItems = [];
 let currentDoneTaskIds = new Set();
 let currentConfigSnapshot = null;
+let currentUpdateState = null;
 const expandedTaskIds = new Set();
 
 function setStatus(message) {
@@ -81,6 +88,17 @@ function toggleSettings(forceOpen) {
     ? forceOpen
     : settingsPanel.classList.contains("hidden");
   settingsPanel.classList.toggle("hidden", !shouldOpen);
+}
+
+function applyUpdateState(state) {
+  currentUpdateState = state;
+  appVersionLabel.textContent = `Version ${state.version}`;
+  updateStatusText.textContent = state.message;
+  updateStatusBadge.textContent = state.status;
+  updateStatusBadge.className = `update-badge status-${state.status}`;
+  checkUpdatesButton.disabled = !state.canCheck;
+  downloadUpdateButton.classList.toggle("hidden", !state.canDownload);
+  installUpdateButton.classList.toggle("hidden", !state.canInstall);
 }
 
 function scheduleAutoRefresh() {
@@ -204,7 +222,11 @@ function groupAssignments(items) {
     }
 
     const due = new Date(item.dueAt);
-    if (due.getTime() >= now.getTime() && isSameLocalDay(due, now)) {
+    if (due.getTime() < now.getTime()) {
+      continue;
+    }
+
+    if (isSameLocalDay(due, now)) {
       groups.dueToday.push(item);
     } else {
       groups.todo.push(item);
@@ -534,8 +556,24 @@ async function refreshAssignments() {
   setStatus(`Showing ${result.items.length} tasks. Updated ${fetchedAt}.`);
 }
 
+async function checkForUpdates() {
+  const state = await window.teluWidget.checkForUpdates();
+  applyUpdateState(state);
+}
+
+async function downloadUpdate() {
+  await window.teluWidget.downloadUpdate();
+}
+
+async function installUpdate() {
+  await window.teluWidget.installUpdate();
+}
+
 async function bootstrap() {
   const config = await window.teluWidget.getConfig();
+  const appInfo = await window.teluWidget.getAppInfo();
+  applyUpdateState(await window.teluWidget.getUpdateState());
+  appVersionLabel.textContent = `Version ${appInfo.version}`;
   applyConfig(config);
   scheduleAutoRefresh();
   startLiveClock();
@@ -600,6 +638,24 @@ closeSettingsButton.addEventListener("click", () => {
   toggleSettings(false);
 });
 
+checkUpdatesButton.addEventListener("click", () => {
+  checkForUpdates().catch((error) => {
+    setStatus(error.message);
+  });
+});
+
+downloadUpdateButton.addEventListener("click", () => {
+  downloadUpdate().catch((error) => {
+    setStatus(error.message);
+  });
+});
+
+installUpdateButton.addEventListener("click", () => {
+  installUpdate().catch((error) => {
+    setStatus(error.message);
+  });
+});
+
 minimizeButton.addEventListener("click", () => {
   window.teluWidget.minimizeWindow();
 });
@@ -613,6 +669,10 @@ window.teluWidget.onAuthVerified(() => {
   refreshAssignments().catch((error) => {
     handleRefreshError(error);
   });
+});
+
+window.teluWidget.onUpdateState((state) => {
+  applyUpdateState(state);
 });
 
 bootstrap().catch((error) => {

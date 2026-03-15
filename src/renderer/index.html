@@ -15,7 +15,7 @@
           </div>
           <div class="brand-copy">
             <p class="brand-kicker">Telkom University</p>
-            <h1>LMS Tasks Manager</h1>
+            <h1>LMS Tasks Checker</h1>
           </div>
         </div>
 
@@ -98,6 +98,22 @@
           <div class="actions">
             <button id="saveSettingsButton" class="primary-button" type="button">Save changes</button>
             <button id="settingsAuthButton" class="ghost-button" type="button">Re-authenticate</button>
+          </div>
+
+          <div class="update-panel">
+            <div class="update-panel-header">
+              <div>
+                <p class="section-kicker">App Updates</p>
+                <h3 id="appVersionLabel">Version --</h3>
+              </div>
+              <span id="updateStatusBadge" class="update-badge">Idle</span>
+            </div>
+            <p id="updateStatusText" class="hero-copy">Checking update capability...</p>
+            <div class="actions">
+              <button id="checkUpdatesButton" class="ghost-button" type="button">Check for updates</button>
+              <button id="downloadUpdateButton" class="primary-button hidden" type="button">Download update</button>
+              <button id="installUpdateButton" class="primary-button hidden" type="button">Restart to install</button>
+            </div>
           </div>
         </section>
 
